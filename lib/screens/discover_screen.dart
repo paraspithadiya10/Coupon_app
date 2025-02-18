@@ -131,6 +131,7 @@ class DiscoverScreen extends StatelessWidget {
                               context: context, 
                               builder: (context) => AlertDialog.adaptive(
                                 title: Text('information'),
+                                backgroundColor: Colors.white,
                                 content: Text('You tapped on map button.'),
                                 actions: [
                                   TextButton(
