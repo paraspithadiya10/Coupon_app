@@ -36,14 +36,21 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: CircleBorder(),
         child: Padding(
           padding: const EdgeInsets.only(top: 11.0),
-          child: Column(
-            children: [
-              Icon(
-                CupertinoIcons.building_2_fill,
-                size: 50,
-              ),
-              Text('Discover')
-            ],
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(100)
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  CupertinoIcons.building_2_fill,
+                  size: 30,
+                ),
+                Text('Discover')
+              ],
+            ),
           ),
         ),
       ),
