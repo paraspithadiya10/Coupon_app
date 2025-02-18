@@ -37,10 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 11.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 CupertinoIcons.building_2_fill,
-                size: 50,
+                size: 30,
               ),
               Text('Discover')
             ],
