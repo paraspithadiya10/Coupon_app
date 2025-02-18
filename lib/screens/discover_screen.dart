@@ -27,7 +27,7 @@ class DiscoverScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 15,
           children: [
-            _customAppBarUI(height, width),
+            _customAppBarUI(height, width, context),
             _categoryTitleAndItemsUI(context, categoryItems, height, width),
             _discoverTitleUI(context),
             _discoverGridViewUI(height, width)
@@ -84,7 +84,7 @@ class DiscoverScreen extends StatelessWidget {
         ));
   }
 
-  Widget _customAppBarUI(height, width) {
+  Widget _customAppBarUI(height, width, context) {
     return Stack(
       children: [
         Container(
@@ -125,7 +125,26 @@ class DiscoverScreen extends StatelessWidget {
                   shape: CircleBorder(),
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
-                    child: IconButton(onPressed: () {}, icon: Icon(Icons.map)),
+                    child: IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context, 
+                              builder: (context) => AlertDialog.adaptive(
+                                title: Text('information'),
+                                content: Text('You tapped on map button.'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: (){
+                                        Navigator.pop(context);
+                                      }, 
+                                      child: Text('Ok')
+                                  )
+                                ],
+                              )
+                          );
+                        },
+                        icon: Icon(Icons.map)
+                    ),
                   ),
                 )),
           ],
