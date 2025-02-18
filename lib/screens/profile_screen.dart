@@ -52,14 +52,14 @@ class ProfileScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 30.0),
               child: TextButton(
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-                  child: Text('Log out', style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Color(0xff1773FF)))
-              ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Log out',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Color(0xff1773FF)))),
             )
           ],
         ),
@@ -119,7 +119,11 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         spacing: 3,
         children: [
-          Icon(Icons.arrow_back_ios_new),
+          GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios_new)),
           Text(
             'SETTINGS',
             style: Theme.of(context).textTheme.headlineSmall,
