@@ -123,20 +123,8 @@ class DiscoverScreen extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: IconButton(
                         onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog.adaptive(
-                                    title: Text('information'),
-                                    backgroundColor: Colors.white,
-                                    content: Text('You tapped on map button.'),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('Ok'))
-                                    ],
-                                  ));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('You tapped on map button.')));
                         },
                         icon: Icon(Icons.map)),
                   ),
