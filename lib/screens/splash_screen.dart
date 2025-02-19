@@ -1,25 +1,47 @@
-import 'package:demo_app/widgets/social_buttons_widget.dart';
+import 'dart:async';
+
+import 'package:demo_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.sizeOf(context).height;
-    double width = MediaQuery.sizeOf(context).width;
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Timer(Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff484453),
       body: Center(
-        child: Container(
-          height: height * 0.2,
-          width: width * 0.3,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Colors.black),
-          ),
-          child:
-              SocialButtonsWidget(imagePath: 'assets/images/adidas_logo.png'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.person_2_sharp,
+              size: 100,
+              color: Colors.white,
+            ),
+            Text(
+              'Welcome to the Coupon App',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+            ),
+          ],
         ),
       ),
     );
