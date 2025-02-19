@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onDestinationSelected: onDestinationChanged,
         destinations: [
           NavigationDestination(
-              selectedIcon: Icon(Icons.notification_important_sharp),
+              selectedIcon: Icon(Icons.notification_important_sharp, size: 35),
               icon: Icon(
                 Icons.notifications_outlined,
                 size: 35,
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Notifications'),
           NavigationDestination(icon: SizedBox(), label: ''),
           NavigationDestination(
-              selectedIcon: Icon(Icons.person_2_sharp),
+              selectedIcon: Icon(Icons.person_2_sharp, size: 35),
               icon: Icon(
                 CupertinoIcons.person,
                 size: 35,
