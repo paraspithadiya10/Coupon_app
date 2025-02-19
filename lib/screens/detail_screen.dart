@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key});
@@ -157,17 +156,18 @@ class DetailScreen extends StatelessWidget {
 }
 
 class BrandDiscount extends StatelessWidget {
-  BrandDiscount(
-      {super.key,
-      required this.discountPercentage,
-      required this.imagePath,
-      required this.isBelongsTo,
-      required this.height,
-      required this.width});
+  const BrandDiscount({
+    super.key,
+    required this.discountPercentage,
+    required this.imagePath,
+    required this.isBelongsTo,
+    required this.height,
+    required this.width,
+  });
 
   final int discountPercentage;
   final String imagePath;
-  bool isBelongsTo = false;
+  final bool isBelongsTo;
   final double height;
   final double width;
 

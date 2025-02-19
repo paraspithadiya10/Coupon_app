@@ -8,10 +8,6 @@ class DiscoverScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
-    var size = MediaQuery.of(context).size;
-
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    final double itemWidth = size.width / 2;
 
     List categoryItems = [
       'Grocery',
@@ -23,16 +19,16 @@ class DiscoverScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 15,
-          children: [
-            _customAppBarUI(height, width, context),
-            _categoryTitleAndItemsUI(context, categoryItems, height, width),
-            _discoverTitleUI(context),
-            _discoverGridViewUI(height, width)
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 15,
+        children: [
+          _customAppBarUI(height, width, context),
+          _categoryTitleAndItemsUI(context, categoryItems, height, width),
+          _discoverTitleUI(context),
+          _discoverGridViewUI(height, width)
+        ],
+      ),
     );
   }
 
@@ -128,24 +124,21 @@ class DiscoverScreen extends StatelessWidget {
                     child: IconButton(
                         onPressed: () {
                           showDialog(
-                              context: context, 
+                              context: context,
                               builder: (context) => AlertDialog.adaptive(
-                                title: Text('information'),
-                                backgroundColor: Colors.white,
-                                content: Text('You tapped on map button.'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: (){
-                                        Navigator.pop(context);
-                                      }, 
-                                      child: Text('Ok')
-                                  )
-                                ],
-                              )
-                          );
+                                    title: Text('information'),
+                                    backgroundColor: Colors.white,
+                                    content: Text('You tapped on map button.'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Ok'))
+                                    ],
+                                  ));
                         },
-                        icon: Icon(Icons.map)
-                    ),
+                        icon: Icon(Icons.map)),
                   ),
                 )),
           ],
@@ -154,7 +147,7 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _discoverTitleUI(context){
+  Widget _discoverTitleUI(context) {
     return Padding(
       padding: const EdgeInsets.only(left: 30),
       child: Text(
@@ -167,7 +160,7 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _discoverGridViewUI(height, width){
+  Widget _discoverGridViewUI(height, width) {
     return Expanded(
       child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -186,45 +179,44 @@ class DiscoverScreen extends StatelessWidget {
                   discount: 10,
                   brandName: 'Castel Winery',
                   date: 'jun 1 - jun 8',
-                isBelongsTo: true
-              ),
+                  isBelongsTo: true),
               GridItems(
                   height: height,
                   width: width,
                   discount: 15,
                   brandName: 'Pancakes House',
-                  date: 'jun 1 - jun 24',isBelongsTo: false
-              ),
+                  date: 'jun 1 - jun 24',
+                  isBelongsTo: false),
               GridItems(
-                  height: height,
-                  width: width,
-                  discount: 10,
-                  brandName: 'Spa Boutique',
-                  date: 'jun 1 - jun 8',
+                height: height,
+                width: width,
+                discount: 10,
+                brandName: 'Spa Boutique',
+                date: 'jun 1 - jun 8',
                 isBelongsTo: true,
               ),
               GridItems(
-                  height: height,
-                  width: width,
-                  discount: 15,
-                  brandName: 'H & M',
-                  date: 'jun 1 - jun 8',
+                height: height,
+                width: width,
+                discount: 15,
+                brandName: 'H & M',
+                date: 'jun 1 - jun 8',
                 isBelongsTo: false,
               ),
               GridItems(
-                  height: height,
-                  width: width,
-                  discount: 5,
-                  brandName: 'Apple online store',
-                  date: 'jun 1 - jun 18',
+                height: height,
+                width: width,
+                discount: 5,
+                brandName: 'Apple online store',
+                date: 'jun 1 - jun 18',
                 isBelongsTo: true,
               ),
               GridItems(
-                  height: height,
-                  width: width,
-                  discount: 5,
-                  brandName: 'Mashya Restaurant',
-                  date: 'jun 1 - jun 8',
+                height: height,
+                width: width,
+                discount: 5,
+                brandName: 'Mashya Restaurant',
+                date: 'jun 1 - jun 8',
                 isBelongsTo: false,
               ),
             ],
@@ -240,19 +232,20 @@ class GridItems extends StatelessWidget {
       required this.width,
       required this.discount,
       required this.brandName,
-      required this.date, required this.isBelongsTo});
+      required this.date,
+      required this.isBelongsTo});
 
   final double height;
   final double width;
   final double discount;
   final String brandName;
   final String date;
-  bool isBelongsTo = true;
+  final bool isBelongsTo;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.pushNamed(context, '/detail_Screen');
       },
       child: Card(
