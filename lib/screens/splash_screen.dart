@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
@@ -26,22 +25,10 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Color(0xff484453),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.person_2_sharp,
-              size: 100,
-              color: Colors.white,
-            ),
-            Text(
-              'Welcome to the Coupon App',
-              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-            ),
-          ],
+        child: Icon(
+          Icons.person_2_sharp,
+          size: 100,
+          color: Colors.white,
         ),
       ),
     );
