@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:demo_app/screens/home_screen.dart';
 import 'package:demo_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +12,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const String KEYLOGIN = "login";
+
   @override
   void initState() {
     super.initState();
@@ -32,11 +34,24 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  void whereToGo() {
-    var sharedPref = SharedPreferences.getInstance();
+  void whereToGo() async {
+    var sharedPref = await SharedPreferences.getInstance();
+
+    var isLogedIn = sharedPref.getBool(KEYLOGIN);
+
     Timer(Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      if (isLogedIn != null) {
+        if (isLogedIn) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        } else {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
     });
   }
 }
