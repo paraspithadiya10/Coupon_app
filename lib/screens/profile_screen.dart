@@ -1,6 +1,9 @@
+import 'package:demo_app/screens/login_screen.dart';
+import 'package:demo_app/screens/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -52,8 +55,11 @@ class ProfileScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 30.0),
               child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    var sharedPref = await SharedPreferences.getInstance();
+                    sharedPref.setBool(SplashScreenState.KEYLOGIN, false);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   },
                   child: Text('Log out',
                       style: Theme.of(context)
