@@ -1,6 +1,9 @@
+import 'package:demo_app/screens/home_screen.dart';
+import 'package:demo_app/screens/splash_screen.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,9 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
             headerGraphicsUI(width, height),
             socialAuthOptionsUI(),
             Container(
-              padding: EdgeInsets.only(left: 35, top: height * 0.08, right: 35),
-              child: loginFormUI()
-            ),
+                padding:
+                    EdgeInsets.only(left: 35, top: height * 0.08, right: 35),
+                child: loginFormUI()),
           ],
         ),
       ),
@@ -88,23 +91,27 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget textAndArrowButtonUI(){
+  Widget textAndArrowButtonUI() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           'Sign in',
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+                fontWeight: FontWeight.w700,
+              ),
         ),
         CircleAvatar(
           radius: 40,
           backgroundColor: Color(0xff484453),
           child: IconButton(
-              onPressed: (){
-                if(controller.text.toString() == 'admin'){
-                  Navigator.pushNamed(context, '/home_screen');
+              onPressed: () async {
+                if (controller.text.toString() == 'admin') {
+                  var sharedPref = await SharedPreferences.getInstance();
+                  sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()));
                 }
               },
               icon: Icon(
@@ -143,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget loginFormUI(){
+  Widget loginFormUI() {
     return Form(
       child: Column(
         spacing: 30,
