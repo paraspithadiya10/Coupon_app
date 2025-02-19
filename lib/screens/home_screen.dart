@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
-  void onDestinationChanged(int index){
+  void onDestinationChanged(int index) {
     setState(() {
       selectedIndex = index;
     });
@@ -50,24 +50,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
-          indicatorColor: Colors.transparent,
-          backgroundColor: Colors.transparent,
-          onDestinationSelected: onDestinationChanged,
-          destinations: [
-            NavigationDestination(
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  size: 35,
-                ),
-                label: 'Notifications'),
-            NavigationDestination(icon: SizedBox(), label: ''),
-            NavigationDestination(
-                icon: Icon(
-                  CupertinoIcons.person,
-                  size: 35,
-                ),
-                label: 'Me')
-          ],
+        indicatorColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        onDestinationSelected: onDestinationChanged,
+        destinations: [
+          NavigationDestination(
+              selectedIcon: Icon(Icons.notification_important_sharp),
+              icon: Icon(
+                Icons.notifications_outlined,
+                size: 35,
+              ),
+              label: 'Notifications'),
+          NavigationDestination(icon: SizedBox(), label: ''),
+          NavigationDestination(
+              selectedIcon: Icon(Icons.person_2_sharp),
+              icon: Icon(
+                CupertinoIcons.person,
+                size: 35,
+              ),
+              label: 'Me')
+        ],
       ),
     );
   }
