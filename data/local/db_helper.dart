@@ -3,7 +3,7 @@ class DbHelper {
   DbHelper._();
   static final DbHelper getInstance = DbHelper._();
 
-  Database? myDB;
+  Data
 
   /// db Open(path -> if exist -> open, if not exist -> create)
 
