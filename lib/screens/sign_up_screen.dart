@@ -1,16 +1,40 @@
+import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  List<Map<String, dynamic>> userList = [];
+  DbHelper? dbRef;
+
+  @override
+  void initState() {
+    super.initState();
+    dbRef = DbHelper.getInstance;
+    getUserList();
+  }
+
+  void getUserList() async {
+    userList = await dbRef!.getAllUsers();
+    debugPrint(userList.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
 
-    TextEditingController controller = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -37,7 +61,14 @@ class SignUpScreen extends StatelessWidget {
                 fit: BoxFit.fill,
               ),
             ),
-            screenNameSocialButtonsAndFormUI(width, height, context, controller)
+            screenNameSocialButtonsAndFormUI(
+                width,
+                height,
+                context,
+                nameController,
+                emailController,
+                passwordController,
+                confirmPasswordController)
           ],
         ),
       ),
@@ -45,7 +76,13 @@ class SignUpScreen extends StatelessWidget {
   }
 
   Widget screenNameSocialButtonsAndFormUI(
-      double width, double height, BuildContext context, controller) {
+      double width,
+      double height,
+      BuildContext context,
+      nameController,
+      emailController,
+      passwordController,
+      confirmPasswordController) {
     return SingleChildScrollView(
       child: SizedBox(
         child: Column(
@@ -68,7 +105,13 @@ class SignUpScreen extends StatelessWidget {
             Container(
                 padding:
                     EdgeInsets.only(left: 35, top: height * 0.04, right: 35),
-                child: formTextFieldsUI(context, controller, height)),
+                child: formTextFieldsUI(
+                    context,
+                    nameController,
+                    emailController,
+                    passwordController,
+                    confirmPasswordController,
+                    height)),
           ],
         ),
       ),
@@ -95,21 +138,23 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Widget formTextFieldsUI(context, controller, height) {
+  Widget formTextFieldsUI(context, nameController, emailController,
+      passwordController, confirmPasswordController, height) {
     return Form(
       child: Column(
         spacing: 30,
         children: [
           TextFormField(
+            controller: nameController,
             decoration: InputDecoration(
                 labelText: 'Name',
                 labelStyle: Theme.of(context)
                     .textTheme
                     .titleLarge!
                     .copyWith(color: Colors.white)),
-            controller: controller,
           ),
           TextFormField(
+            controller: emailController,
             decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: Theme.of(context)
@@ -118,6 +163,7 @@ class SignUpScreen extends StatelessWidget {
                     .copyWith(color: Colors.white)),
           ),
           TextFormField(
+            controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Password',
@@ -128,6 +174,7 @@ class SignUpScreen extends StatelessWidget {
             ),
           ),
           TextFormField(
+            controller: confirmPasswordController,
             obscureText: true,
             decoration: InputDecoration(
                 labelText: 'Confirm Password',
@@ -136,7 +183,8 @@ class SignUpScreen extends StatelessWidget {
                     .titleLarge!
                     .copyWith(color: Colors.white)),
           ),
-          textAndButtonUI(context),
+          textAndButtonUI(
+              context, nameController, emailController, passwordController),
           SizedBox(height: 20),
           signInButtonUI(context),
           SizedBox(
@@ -147,7 +195,8 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Widget textAndButtonUI(BuildContext context) {
+  Widget textAndButtonUI(BuildContext context, nameController, emailController,
+      passwordController) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -162,7 +211,14 @@ class SignUpScreen extends StatelessWidget {
           backgroundColor: Color(0xff484453),
           child: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                dbRef!.addUser(
+                    username: nameController.text,
+                    email: emailController.text,
+                    password: passwordController.text);
+                getUserList();
+                if (userList.isNotEmpty) {
+                  Navigator.pop(context);
+                }
               },
               icon: Icon(
                 Icons.arrow_forward,
