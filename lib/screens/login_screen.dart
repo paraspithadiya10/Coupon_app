@@ -18,6 +18,7 @@ class LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   DbHelper? dbRef;
   static List<Map<String, dynamic>> currentUser = [];
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -28,12 +29,23 @@ class LoginScreenState extends State<LoginScreen> {
   void getCurrentUser() async {
     currentUser = await dbRef!.getUser(
         emailController.text.toString(), passwordController.text.toString());
-    debugPrint(currentUser.toString());
-    var sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
 
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    if (currentUser.isEmpty) {
+      // Show error message if no user found with given credentials
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid email or password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // User found, proceed with login
+      var sharedPref = await SharedPreferences.getInstance();
+      await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+    }
   }
 
   @override
@@ -127,7 +139,9 @@ class LoginScreenState extends State<LoginScreen> {
           backgroundColor: Color(0xff484453),
           child: IconButton(
               onPressed: () async {
-                getCurrentUser();
+                if (_formKey.currentState!.validate()) {
+                  getCurrentUser();
+                }
               },
               icon: Icon(
                 Icons.arrow_forward,
@@ -167,11 +181,22 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget loginFormUI() {
     return Form(
+      key: _formKey,
       child: Column(
         spacing: 30,
         children: [
           TextFormField(
             controller: emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Email is required';
+              }
+              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                  .hasMatch(value)) {
+                return 'Invalid email address';
+              }
+              return null;
+            },
             decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: Theme.of(context)
@@ -181,6 +206,15 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           TextFormField(
             controller: passwordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Password is required';
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters long';
+              }
+              return null;
+            },
             obscureText: true,
             decoration: InputDecoration(
                 labelText: 'Password',
