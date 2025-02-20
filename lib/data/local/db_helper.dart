@@ -86,6 +86,7 @@ class DbHelper {
     return rowsEffected > 0;
   }
 
+  // get user by email
   getUserByEmail(String email) async {
     var db = await getDB();
     var userData =

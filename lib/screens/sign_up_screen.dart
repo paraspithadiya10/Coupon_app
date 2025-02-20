@@ -156,8 +156,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (value == null || value.isEmpty) {
                 return 'Name is required';
               }
-              if (value.length < 10) {
-                return 'Name must be at least 10 characters long';
+              if (value.length < 5) {
+                return 'Name must be at least 5 characters long';
               }
               return null;
             },
