@@ -36,6 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
 
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SizedBox(
@@ -68,7 +70,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 nameController,
                 emailController,
                 passwordController,
-                confirmPasswordController)
+                confirmPasswordController,
+                _formKey)
           ],
         ),
       ),
@@ -82,7 +85,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       nameController,
       emailController,
       passwordController,
-      confirmPasswordController) {
+      confirmPasswordController,
+      formKey) {
     return SingleChildScrollView(
       child: SizedBox(
         child: Column(
@@ -111,7 +115,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     emailController,
                     passwordController,
                     confirmPasswordController,
-                    height)),
+                    height,
+                    formKey)),
           ],
         ),
       ),
@@ -139,13 +144,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget formTextFieldsUI(context, nameController, emailController,
-      passwordController, confirmPasswordController, height) {
+      passwordController, confirmPasswordController, height, formKey) {
     return Form(
+      key: formKey,
       child: Column(
         spacing: 30,
         children: [
           TextFormField(
             controller: nameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Name is required';
+              }
+              if (value.length < 10) {
+                return 'Name must be at least 10 characters long';
+              }
+              return null;
+            },
             decoration: InputDecoration(
                 labelText: 'Name',
                 labelStyle: Theme.of(context)
@@ -155,6 +170,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Email is required';
+              }
+              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                  .hasMatch(value)) {
+                return 'Invalid email address';
+              }
+              return null;
+            },
             decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: Theme.of(context)
@@ -165,6 +190,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           TextFormField(
             controller: passwordController,
             obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Password is required';
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters long';
+              }
+              return null;
+            },
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: Theme.of(context)
@@ -176,6 +210,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           TextFormField(
             controller: confirmPasswordController,
             obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Confirm Password is required';
+              }
+              if (value != passwordController.text) {
+                return "Passwords doesn't match";
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters long';
+              }
+              return null;
+            },
             decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 labelStyle: Theme.of(context)
@@ -183,8 +229,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     .titleLarge!
                     .copyWith(color: Colors.white)),
           ),
-          textAndButtonUI(
-              context, nameController, emailController, passwordController),
+          textAndButtonUI(context, nameController, emailController,
+              passwordController, formKey),
           SizedBox(height: 20),
           signInButtonUI(context),
           SizedBox(
@@ -196,7 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget textAndButtonUI(BuildContext context, nameController, emailController,
-      passwordController) {
+      passwordController, _formKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -210,14 +256,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
           radius: 40,
           backgroundColor: Color(0xff484453),
           child: IconButton(
-              onPressed: () {
-                dbRef!.addUser(
-                    username: nameController.text,
-                    email: emailController.text,
-                    password: passwordController.text);
-                getUserList();
-                if (userList.isNotEmpty) {
-                  Navigator.pop(context);
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  // Check if user exists
+                  final existingUser =
+                      await dbRef!.getUserByEmail(emailController.text);
+
+                  if (existingUser != null) {
+                    // Show error if user exists
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('User with this email already exists'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // Add user if they don't exist
+                  await dbRef!.addUser(
+                      username: nameController.text,
+                      email: emailController.text,
+                      password: passwordController.text);
+                  getUserList();
+                  if (userList.isNotEmpty) {
+                    Navigator.pop(context);
+                  }
                 }
               },
               icon: Icon(

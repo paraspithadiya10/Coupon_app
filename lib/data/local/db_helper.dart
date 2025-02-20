@@ -85,4 +85,12 @@ class DbHelper {
 
     return rowsEffected > 0;
   }
+
+  getUserByEmail(String email) async {
+    var db = await getDB();
+    var userData =
+        await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
+
+    return userData;
+  }
 }
