@@ -5,8 +5,8 @@ import 'package:sqflite/sqflite.dart';
 
 class DbHelper {
   /// Singleton
-  DbHelper();
-  static final DbHelper getInstance = DbHelper();
+  DbHelper._();
+  static final DbHelper getInstance = DbHelper._();
 
   static final String userTable = 'users';
   static final String userId = 'id';

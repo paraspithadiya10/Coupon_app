@@ -13,6 +13,11 @@ class ProfileScreen extends StatelessWidget {
     final double height = MediaQuery.sizeOf(context).height;
     final double width = MediaQuery.sizeOf(context).width;
 
+    final userEmail = LoginScreenState.currentUser.isNotEmpty
+        ? LoginScreenState.currentUser.first['email'] ??
+            LoginScreenState.currentUser.first['email']
+        : 'No email';
+
     List<ProfileList> profileMenuList = <ProfileList>[
       ProfileList(icon: Icons.notifications_outlined, label: 'Notifications'),
       ProfileList(icon: Icons.lock_outline, label: 'Privacy'),
@@ -29,6 +34,16 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _customAppBarUI(height, width),
+            ListTile(
+              leading: CircleAvatar(
+                radius: 25,
+                child: Icon(CupertinoIcons.person_circle),
+              ),
+              title: Text('$userEmail'),
+            ),
+            SizedBox(
+              height: height * 0.01,
+            ),
             _settingTitleUI(context),
             SizedBox(
               height: height * 0.03,

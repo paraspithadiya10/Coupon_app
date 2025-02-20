@@ -1,3 +1,4 @@
+import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/screens/home_screen.dart';
 import 'package:demo_app/screens/splash_screen.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
@@ -9,11 +10,31 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController controller = TextEditingController();
+class LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  DbHelper? dbRef;
+  static List<Map<String, dynamic>> currentUser = [];
+
+  @override
+  void initState() {
+    super.initState();
+    dbRef = DbHelper.getInstance;
+  }
+
+  void getCurrentUser() async {
+    currentUser = await dbRef!.getUser(
+        emailController.text.toString(), passwordController.text.toString());
+    debugPrint(currentUser.toString());
+    var sharedPref = await SharedPreferences.getInstance();
+    sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,13 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Color(0xff484453),
           child: IconButton(
               onPressed: () async {
-                if (controller.text.toString() == 'admin') {
-                  var sharedPref = await SharedPreferences.getInstance();
-                  sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
-
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
-                }
+                getCurrentUser();
               },
               icon: Icon(
                 Icons.arrow_forward,
@@ -156,15 +171,16 @@ class _LoginScreenState extends State<LoginScreen> {
         spacing: 30,
         children: [
           TextFormField(
+            controller: emailController,
             decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: Theme.of(context)
                     .textTheme
                     .titleLarge!
                     .copyWith(color: Colors.grey)),
-            controller: controller,
           ),
           TextFormField(
+            controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
                 labelText: 'Password',
