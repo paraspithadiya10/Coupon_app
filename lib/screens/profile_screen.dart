@@ -18,8 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var userData = [];
 
   final userEmail = LoginScreenState.currentUser.isNotEmpty
-      ? LoginScreenState.currentUser.first['email'] ??
-          LoginScreenState.currentUser.first['email']
+      ? LoginScreenState.currentUser.first['email']
       : 'No email';
 
   @override
@@ -37,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void deleteAccount() async {
     var sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setBool(SplashScreenState.KEYLOGIN, false);
+    sharedPref.setBool(SplashScreenState.keyLogin, false);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
@@ -79,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   title: Text(
                     userData.isNotEmpty
-                        ? userData.first['username'] ?? 'No username'
+                        ? userData.first['username']
                         : 'Loading...',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
@@ -206,11 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         spacing: 3,
         children: [
-          GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.arrow_back_ios_new)),
+          Icon(Icons.arrow_back_ios_new),
           Text(
             'SETTINGS',
             style: Theme.of(context).textTheme.headlineSmall,

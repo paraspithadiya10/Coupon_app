@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   DbHelper? dbRef;
   static List<Map<String, dynamic>> currentUser = [];
   final _formKey = GlobalKey<FormState>();
@@ -41,7 +42,7 @@ class LoginScreenState extends State<LoginScreen> {
     } else {
       // User found, proceed with login
       var sharedPref = await SharedPreferences.getInstance();
-      await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+      await sharedPref.setBool(SplashScreenState.keyLogin, true);
 
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const HomeScreen()));

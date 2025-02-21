@@ -12,7 +12,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  static const String KEYLOGIN = "login";
+  static const String keyLogin = "login";
 
   @override
   void initState() {
@@ -34,10 +34,10 @@ class SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  void whereToGo() async {
+  Future<void> whereToGo() async {
     var sharedPref = await SharedPreferences.getInstance();
 
-    var isLogedIn = sharedPref.getBool(KEYLOGIN);
+    var isLogedIn = sharedPref.getBool(keyLogin);
 
     Timer(Duration(seconds: 2), () {
       if (isLogedIn != null) {
