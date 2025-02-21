@@ -1,3 +1,4 @@
+import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/screens/login_screen.dart';
 import 'package:demo_app/screens/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,18 +6,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  DbHelper? dbRef;
+  var userData = [];
+
+  final userEmail = LoginScreenState.currentUser.isNotEmpty
+      ? LoginScreenState.currentUser.first['email'] ??
+          LoginScreenState.currentUser.first['email']
+      : 'No email';
+
+  @override
+  void initState() {
+    dbRef = DbHelper.getInstance;
+    super.initState();
+    getUserData();
+  }
+
+  getUserData() async {
+    userData = await dbRef!.getUserByEmail(userEmail);
+    setState(() {});
+    return userData;
+  }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.sizeOf(context).height;
     final double width = MediaQuery.sizeOf(context).width;
-
-    final userEmail = LoginScreenState.currentUser.isNotEmpty
-        ? LoginScreenState.currentUser.first['email'] ??
-            LoginScreenState.currentUser.first['email']
-        : 'No email';
 
     List<ProfileList> profileMenuList = <ProfileList>[
       ProfileList(icon: Icons.notifications_outlined, label: 'Notifications'),
@@ -34,15 +56,28 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _customAppBarUI(height, width),
-            ListTile(
-              leading: CircleAvatar(
-                radius: 25,
-                child: Icon(CupertinoIcons.person_circle),
+            Card.outlined(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    CupertinoIcons.person_circle,
+                    size: 40,
+                  ),
+                ),
+                title: Text(
+                  userData.isNotEmpty
+                      ? userData.first['username'] ?? 'No username'
+                      : 'Loading...',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                subtitle: Text(userEmail),
               ),
-              title: Text('$userEmail'),
             ),
             SizedBox(
-              height: height * 0.01,
+              height: height * 0.02,
             ),
             _settingTitleUI(context),
             SizedBox(
