@@ -30,6 +30,8 @@ class LoginScreenState extends State<LoginScreen> {
     currentUser = await dbRef!.getUser(
         emailController.text.toString(), passwordController.text.toString());
 
+    if (!mounted) return; // Add mounted check before using context
+
     if (currentUser.isEmpty) {
       // Show error message if no user found with given credentials
       ScaffoldMessenger.of(context).showSnackBar(

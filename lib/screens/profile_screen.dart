@@ -74,6 +74,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(userEmail),
+                trailing: Icon(
+                  Icons.navigate_next,
+                  size: 30,
+                ),
               ),
             ),
             SizedBox(
