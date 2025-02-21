@@ -29,7 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -64,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 emailController,
                 passwordController,
                 confirmPasswordController,
-                _formKey)
+                formKey)
           ],
         ),
       ),
@@ -235,7 +235,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget textAndButtonUI(BuildContext context, nameController, emailController,
-      passwordController, _formKey) {
+      passwordController, formKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -250,7 +250,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           backgroundColor: Color(0xff484453),
           child: IconButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   // Check if user already exists
                   final existingUsers = await dbRef!.getAllUsers();
                   final userExists = existingUsers
