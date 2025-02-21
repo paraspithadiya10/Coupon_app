@@ -87,7 +87,7 @@ class DbHelper {
   }
 
   // get user by email
-  getUserByEmail(String email) async {
+  Future<dynamic> getUserByEmail(String email) async {
     var db = await getDB();
     var userData =
         await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
