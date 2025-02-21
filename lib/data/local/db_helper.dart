@@ -20,13 +20,6 @@ class DbHelper {
   Future<Database> getDB() async {
     myDB ??= await openDB();
     return myDB!;
-
-    // if (myDB != null) {
-    //   return myDB!;
-    // } else {
-    //   myDB = await OpenDB();
-    //   return myDB!;
-    // }
   }
 
   Future<Database> openDB() async {
