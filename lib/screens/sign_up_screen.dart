@@ -253,9 +253,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 if (_formKey.currentState!.validate()) {
                   // Check if user already exists
                   final existingUsers = await dbRef!.getAllUsers();
-                  final userExists = existingUsers.any((user) =>
-                      user['email'].toString().toLowerCase() ==
-                      emailController.text.toLowerCase());
+                  final userExists = existingUsers
+                      .any((user) => user['email'] == emailController.text);
 
                   if (userExists) {
                     ScaffoldMessenger.of(context).showSnackBar(
