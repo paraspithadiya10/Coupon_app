@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -84,7 +85,7 @@ class DbHelper {
   // get user by email
   Future<dynamic> getUserByStoredEmail() async {
     var sharedPref = await SharedPreferences.getInstance();
-    final email = sharedPref.getString(SplashScreenState.keyEmail);
+    final email = sharedPref.getString(keyEmail);
     var db = await getDB();
     var userData =
         await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);

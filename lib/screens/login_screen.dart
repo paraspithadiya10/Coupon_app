@@ -1,6 +1,6 @@
 import 'package:demo_app/data/local/db_helper.dart';
+import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/home_screen.dart';
-import 'package:demo_app/screens/splash_screen.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,9 +36,8 @@ class LoginScreenState extends State<LoginScreen> {
   void doLogin() async {
     // User found, proceed with login
     var sharedPref = await SharedPreferences.getInstance();
-    await sharedPref.setBool(SplashScreenState.keyLogin, true);
-    await sharedPref.setString(
-        SplashScreenState.keyEmail, emailController.text);
+    await sharedPref.setBool(keyLogin, true);
+    await sharedPref.setString(keyEmail, emailController.text);
 
     if (!mounted) return;
     Navigator.pushReplacement(

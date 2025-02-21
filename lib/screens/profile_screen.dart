@@ -1,6 +1,6 @@
 import 'package:demo_app/data/local/db_helper.dart';
+import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/login_screen.dart';
-import 'package:demo_app/screens/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void deleteAccount() async {
     var sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setBool(SplashScreenState.keyLogin, false);
+    sharedPref.setBool(keyLogin, false);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }

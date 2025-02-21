@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/home_screen.dart';
 import 'package:demo_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  static const String keyLogin = "login";
-  static const String keyEmail = "email";
-
   @override
   void initState() {
     super.initState();
