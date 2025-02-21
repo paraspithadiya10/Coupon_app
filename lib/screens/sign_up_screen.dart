@@ -13,21 +13,44 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   DbHelper? dbRef;
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     dbRef = DbHelper.getInstance;
   }
 
+  void proceedSignUp() async {
+    // Check if user already exists
+    final existingUsers = await dbRef!.getAllUsers();
+    final userExists =
+        existingUsers.any((user) => user['email'] == emailController.text);
+
+    if (userExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User with this email already exists'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Add new user and navigate to login
+      await dbRef!.addUser(
+          username: nameController.text,
+          email: emailController.text,
+          password: passwordController.text);
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
-
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    TextEditingController confirmPasswordController = TextEditingController();
 
     final formKey = GlobalKey<FormState>();
 
@@ -249,28 +272,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           radius: 40,
           backgroundColor: Color(0xff484453),
           child: IconButton(
-              onPressed: () async {
+              onPressed: () {
                 if (formKey.currentState!.validate()) {
-                  // Check if user already exists
-                  final existingUsers = await dbRef!.getAllUsers();
-                  final userExists = existingUsers
-                      .any((user) => user['email'] == emailController.text);
-
-                  if (userExists) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('User with this email already exists'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  } else {
-                    // Add new user and navigate to login
-                    await dbRef!.addUser(
-                        username: nameController.text,
-                        email: emailController.text,
-                        password: passwordController.text);
-                    Navigator.pop(context);
-                  }
+                  proceedSignUp();
                 }
               },
               icon: Icon(
