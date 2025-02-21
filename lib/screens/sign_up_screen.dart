@@ -43,6 +43,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           username: nameController.text,
           email: emailController.text,
           password: passwordController.text);
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Account created successfully!'),
+        backgroundColor: const Color.fromARGB(255, 51, 177, 55),
+      ));
+      // navigate to login page
       Navigator.pop(context);
     }
   }

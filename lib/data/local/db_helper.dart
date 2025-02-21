@@ -87,4 +87,13 @@ class DbHelper {
 
     return userData;
   }
+
+  Future<String> updatePassword(
+      {required String email, required String password}) async {
+    var db = await getDB();
+    int rowsEffected = await db.update(userTable, {userPassword: password},
+        where: '$userEmail = ? ', whereArgs: [email]);
+
+    return '$rowsEffected rows effected';
+  }
 }
