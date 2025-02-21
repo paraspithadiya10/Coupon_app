@@ -56,27 +56,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _customAppBarUI(height, width),
-            Card.outlined(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    CupertinoIcons.person_circle,
-                    size: 40,
+            Padding(
+              padding: EdgeInsets.only(left: 16, right: 16),
+              child: Card(
+                color: Color(0xffFAF0FF),
+                elevation: 5,
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      CupertinoIcons.person_fill,
+                      size: 40,
+                    ),
                   ),
-                ),
-                title: Text(
-                  userData.isNotEmpty
-                      ? userData.first['username'] ?? 'No username'
-                      : 'Loading...',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                subtitle: Text(userEmail),
-                trailing: Icon(
-                  Icons.navigate_next,
-                  size: 30,
+                  title: Text(
+                    userData.isNotEmpty
+                        ? userData.first['username'] ?? 'No username'
+                        : 'Loading...',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  subtitle: Text(userEmail),
+                  trailing: Icon(
+                    Icons.navigate_next,
+                    size: 30,
+                  ),
                 ),
               ),
             ),
