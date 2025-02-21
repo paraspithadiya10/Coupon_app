@@ -29,10 +29,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getUserData();
   }
 
-  getUserData() async {
+  Future<dynamic> getUserData() async {
     userData = await dbRef!.getUserByEmail(userEmail);
     setState(() {});
     return userData;
+  }
+
+  void deleteAccount() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    sharedPref.setBool(SplashScreenState.KEYLOGIN, false);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   @override
@@ -113,11 +120,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Padding(
               padding: EdgeInsets.only(left: 30.0),
               child: TextButton(
-                  onPressed: () async {
-                    var sharedPref = await SharedPreferences.getInstance();
-                    sharedPref.setBool(SplashScreenState.KEYLOGIN, false);
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog.adaptive(
+                              backgroundColor: Colors.white,
+                              title: Text('Confirmation'),
+                              content: Text('Are you sure to logout?'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel')),
+                                TextButton(
+                                    onPressed: () {
+                                      deleteAccount();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Ok'))
+                              ],
+                            ));
                   },
                   child: Text('Log out',
                       style: Theme.of(context)
