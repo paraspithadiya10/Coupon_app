@@ -25,10 +25,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void proceedSignUp() async {
-    // Check if user already exists
     final existingUsers = await dbRef!.getAllUsers();
     final userExists =
         existingUsers.any((user) => user['email'] == emailController.text);
+
+    if (!mounted) return; // Add mounted check
 
     if (userExists) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,17 +39,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       );
     } else {
-      // Add new user and navigate to login
       await dbRef!.addUser(
           username: nameController.text,
           email: emailController.text,
           password: passwordController.text);
 
+      if (!mounted) return; // Add another check after the second async gap
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Account created successfully!'),
         backgroundColor: const Color.fromARGB(255, 51, 177, 55),
       ));
-      // navigate to login page
       Navigator.pop(context);
     }
   }

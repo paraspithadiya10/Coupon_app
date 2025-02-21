@@ -13,6 +13,7 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   static const String keyLogin = "login";
+  static const String keyEmail = "email";
 
   @override
   void initState() {

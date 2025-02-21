@@ -15,24 +15,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   DbHelper? dbRef;
-  var userData = [];
-
-  final userEmail = LoginScreenState.currentUser.isNotEmpty
-      ? LoginScreenState.currentUser.first['email']
-      : 'No email';
-
-  @override
-  void initState() {
-    dbRef = DbHelper.getInstance;
-    super.initState();
-    getUserData();
-  }
-
-  Future<dynamic> getUserData() async {
-    userData = await dbRef!.getUserByEmail(userEmail);
-    setState(() {});
-    return userData;
-  }
 
   void deleteAccount() async {
     var sharedPref = await SharedPreferences.getInstance();
@@ -62,37 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _customAppBarUI(height, width),
-            Padding(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              child: Card(
-                color: Color(0xffFAF0FF),
-                elevation: 5,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.transparent,
-                    child: Icon(
-                      CupertinoIcons.person_fill,
-                      size: 40,
-                    ),
-                  ),
-                  title: Text(
-                    userData.isNotEmpty
-                        ? userData.first['username']
-                        : 'Loading...',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  subtitle: Text(userEmail),
-                  trailing: Icon(
-                    Icons.navigate_next,
-                    size: 30,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: height * 0.02,
-            ),
             _settingTitleUI(context),
             SizedBox(
               height: height * 0.03,
@@ -205,7 +156,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         spacing: 3,
         children: [
-          Icon(Icons.arrow_back_ios_new),
+          GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios_new)),
           Text(
             'SETTINGS',
             style: Theme.of(context).textTheme.headlineSmall,

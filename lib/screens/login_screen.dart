@@ -18,7 +18,6 @@ class LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   DbHelper? dbRef;
-  static List<Map<String, dynamic>> currentUser = [];
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -27,26 +26,23 @@ class LoginScreenState extends State<LoginScreen> {
     dbRef = DbHelper.getInstance;
   }
 
-  void getCurrentUser() async {
-    currentUser = await dbRef!.getUser(
+  Future<bool> isUserAvailable() async {
+    final userList = await dbRef!.getUser(
         emailController.text.toString(), passwordController.text.toString());
 
-    if (currentUser.isEmpty) {
-      // Show error message if no user found with given credentials
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid email or password'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } else {
-      // User found, proceed with login
-      var sharedPref = await SharedPreferences.getInstance();
-      await sharedPref.setBool(SplashScreenState.keyLogin, true);
+    return userList.isNotEmpty;
+  }
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-    }
+  void doLogin() async {
+    // User found, proceed with login
+    var sharedPref = await SharedPreferences.getInstance();
+    await sharedPref.setBool(SplashScreenState.keyLogin, true);
+    await sharedPref.setString(
+        SplashScreenState.keyEmail, emailController.text);
+
+    if (!mounted) return;
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   @override
@@ -141,7 +137,16 @@ class LoginScreenState extends State<LoginScreen> {
           child: IconButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  getCurrentUser();
+                  if (await isUserAvailable()) {
+                    doLogin();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Invalid email or password'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
               },
               icon: Icon(

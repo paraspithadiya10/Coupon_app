@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:demo_app/screens/splash_screen.dart';
 
 class DbHelper {
   /// Singleton
@@ -80,7 +82,18 @@ class DbHelper {
   }
 
   // get user by email
-  Future<dynamic> getUserByEmail(String email) async {
+  Future<dynamic> getUserByStoredEmail() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    final email = sharedPref.getString(SplashScreenState.keyEmail);
+    var db = await getDB();
+    var userData =
+        await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
+
+    return userData;
+  }
+
+  // get user by email
+  Future<dynamic> getUserByEmail({required String email}) async {
     var db = await getDB();
     var userData =
         await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
@@ -94,6 +107,6 @@ class DbHelper {
     int rowsEffected = await db.update(userTable, {userPassword: password},
         where: '$userEmail = ? ', whereArgs: [email]);
 
-    return '$rowsEffected rows effected';
+    return '$rowsEffected rows Ef';
   }
 }
