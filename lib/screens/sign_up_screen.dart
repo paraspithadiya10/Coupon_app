@@ -11,19 +11,12 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  List<Map<String, dynamic>> userList = [];
   DbHelper? dbRef;
 
   @override
   void initState() {
     super.initState();
     dbRef = DbHelper.getInstance;
-    getUserList();
-  }
-
-  void getUserList() async {
-    userList = await dbRef!.getAllUsers();
-    debugPrint(userList.toString());
   }
 
   @override
@@ -258,28 +251,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: IconButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  // Check if user exists
-                  final existingUser =
-                      await dbRef!.getUserByEmail(emailController.text);
+                  // Check if user already exists
+                  final existingUsers = await dbRef!.getAllUsers();
+                  final userExists = existingUsers.any((user) =>
+                      user['email'].toString().toLowerCase() ==
+                      emailController.text.toLowerCase());
 
-                  if (existingUser != null) {
-                    // Show error if user exists
+                  if (userExists) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('User with this email already exists'),
                         backgroundColor: Colors.red,
                       ),
                     );
-                    return;
-                  }
-
-                  // Add user if they don't exist
-                  await dbRef!.addUser(
-                      username: nameController.text,
-                      email: emailController.text,
-                      password: passwordController.text);
-                  getUserList();
-                  if (userList.isNotEmpty) {
+                  } else {
+                    // Add new user and navigate to login
+                    await dbRef!.addUser(
+                        username: nameController.text,
+                        email: emailController.text,
+                        password: passwordController.text);
                     Navigator.pop(context);
                   }
                 }
