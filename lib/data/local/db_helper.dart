@@ -98,6 +98,6 @@ class DbHelper {
     int rowsEffected = await db.update(userTable, {userPassword: password},
         where: '$userEmail = ? ', whereArgs: [email]);
 
-    return '$rowsEffected rows Ef';
+    return '$rowsEffected rows Effected';
   }
 }

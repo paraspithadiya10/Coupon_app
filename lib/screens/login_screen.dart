@@ -1,9 +1,9 @@
 import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/home_screen.dart';
+import 'package:demo_app/widgets/login_header_graphics.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,14 +49,13 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.sizeOf(context).height;
-    double width = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            headerGraphicsUI(width, height),
+            LoginHeaderGraphics(),
             socialAuthOptionsUI(),
             Container(
                 padding:
@@ -65,41 +64,6 @@ class LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget headerGraphicsUI(double width, double height) {
-    return SizedBox(
-      width: width * 1.0,
-      height: height * 0.27,
-      child: Stack(children: [
-        SvgPicture.asset(
-          width: width,
-          'assets/images/login_background_1st_layer.svg',
-          fit: BoxFit.fill,
-        ),
-        Positioned(
-            right: 0,
-            child: SvgPicture.asset(
-              'assets/images/login_background_3rd_layer.svg',
-              width: width * 0.40,
-              height: height * 0.25,
-              fit: BoxFit.fill,
-            )),
-        SvgPicture.asset(
-          width: width,
-          'assets/images/login_background_2nd_layer.svg',
-          fit: BoxFit.fill,
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: width * 0.15, top: height * 0.08),
-          child: Text(
-            'Welcome\nBack',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                color: Colors.white, fontWeight: FontWeight.w700, fontSize: 40),
-          ),
-        ),
-      ]),
     );
   }
 

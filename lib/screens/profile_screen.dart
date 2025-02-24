@@ -1,10 +1,11 @@
 import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/login_screen.dart';
+import 'package:demo_app/widgets/appbar_with_search_and_icon.dart';
 import 'package:demo_app/widgets/profile_listtile_widget.dart';
+import 'package:demo_app/widgets/svg_picture_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _customAppBarUI(height, width),
+            AppbarWithSearchAndIcon(icon: Icons.settings),
             if (currentUser.isNotEmpty)
               ProfileListTile(
                   title: '${currentUser.first['username']}',
@@ -128,52 +129,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _customAppBarUI(height, width) {
-    return Stack(
-      children: [
-        Container(
-          height: height * 0.1,
-          width: width * 1.0,
-          color: Color(0xffFAF0FF),
-        ),
-        SvgPicture.asset(
-          'assets/images/home_background_1st_layer.svg',
-          fit: BoxFit.fill,
-        ),
-        AppBar(
-          backgroundColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          title: Card(
-            elevation: 4,
-            child: SizedBox(
-              height: height * 0.04,
-              child: TextFormField(
-                decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search),
-                    labelText: 'Search',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none)),
-              ),
-            ),
-          ),
-          actions: [
-            Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Icon(
-                  Icons.settings,
-                  size: 35,
-                )),
-          ],
-        )
-      ],
     );
   }
 
