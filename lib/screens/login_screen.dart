@@ -20,6 +20,8 @@ class LoginScreenState extends State<LoginScreen> {
   DbHelper? dbRef;
   final _formKey = GlobalKey<FormState>();
 
+  List<Map<String, dynamic>> user = [];
+
   @override
   void initState() {
     super.initState();
@@ -27,17 +29,17 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<bool> isUserAvailable() async {
-    final userList = await dbRef!.getUser(
+    user = await dbRef!.getUser(
         emailController.text.toString(), passwordController.text.toString());
 
-    return userList.isNotEmpty;
+    return user.isNotEmpty;
   }
 
   void doLogin() async {
     // User found, proceed with login
     var sharedPref = await SharedPreferences.getInstance();
     await sharedPref.setBool(keyLogin, true);
-    await sharedPref.setString(keyEmail, emailController.text);
+    await sharedPref.setInt(keyUserId, user.first['id']);
 
     if (!mounted) return;
     Navigator.pushReplacement(

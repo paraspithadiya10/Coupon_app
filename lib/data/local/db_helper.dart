@@ -82,21 +82,12 @@ class DbHelper {
   }
 
   // get user by email
-  Future<dynamic> getUserByStoredEmail() async {
+  Future<List<Map<String, Object?>>> getUserByStoredId() async {
     var sharedPref = await SharedPreferences.getInstance();
-    final email = sharedPref.getString(keyEmail);
+    final userId = sharedPref.getInt(keyUserId);
     var db = await getDB();
     var userData =
-        await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
-
-    return userData;
-  }
-
-  // get user by email
-  Future<dynamic> getUserByEmail({required String email}) async {
-    var db = await getDB();
-    var userData =
-        await db.query(userTable, where: '$userEmail = ?', whereArgs: [email]);
+        await db.query(userTable, where: '$userId = ?', whereArgs: [userId]);
 
     return userData;
   }

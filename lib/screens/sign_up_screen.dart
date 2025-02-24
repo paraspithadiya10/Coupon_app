@@ -29,12 +29,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final userExists =
         existingUsers.any((user) => user['email'] == emailController.text);
 
+    final userNameExists =
+        existingUsers.any((user) => user['username'] == nameController.text);
+
     if (!mounted) return; // Add mounted check
 
     if (userExists) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('User with this email already exists'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (userNameExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This username is not available, please try to change'),
           backgroundColor: Colors.red,
         ),
       );
