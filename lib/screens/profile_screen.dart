@@ -1,9 +1,10 @@
 import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:demo_app/screens/login_screen.dart';
+import 'package:demo_app/widgets/appbar_with_search_and_icon.dart';
+import 'package:demo_app/widgets/profile_listtile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,26 +16,42 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   DbHelper? dbRef;
+  List<Map<String, Object?>> currentUser = [];
+
+  @override
+  void initState() {
+    super.initState();
+    dbRef = DbHelper.getInstance;
+    getCurrentUser();
+  }
+
+  Future<List<Map<String, Object?>>> getCurrentUser() async {
+    currentUser = await dbRef!.getUserByStoredId();
+    setState(() {});
+    return currentUser;
+  }
 
   void deleteAccount() async {
     var sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setBool(keyLogin, false);
+    await sharedPref.setBool(keyLogin, false);
+
+    if (!mounted) return;
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.sizeOf(context).height;
-    final double width = MediaQuery.sizeOf(context).width;
 
-    List<ProfileList> profileMenuList = <ProfileList>[
-      ProfileList(icon: Icons.notifications_outlined, label: 'Notifications'),
-      ProfileList(icon: Icons.lock_outline, label: 'Privacy'),
-      ProfileList(icon: Icons.security_outlined, label: 'Security'),
-      ProfileList(icon: CupertinoIcons.person, label: 'My Account'),
-      ProfileList(icon: Icons.error_outline, label: 'Help'),
-      ProfileList(icon: Icons.info_outline_rounded, label: 'Information')
+    List<ProfileMenuList> profileMenuList = <ProfileMenuList>[
+      ProfileMenuList(
+          icon: Icons.notifications_outlined, label: 'Notifications'),
+      ProfileMenuList(icon: Icons.lock_outline, label: 'Privacy'),
+      ProfileMenuList(icon: Icons.security_outlined, label: 'Security'),
+      ProfileMenuList(icon: CupertinoIcons.person, label: 'My Account'),
+      ProfileMenuList(icon: Icons.error_outline, label: 'Help'),
+      ProfileMenuList(icon: Icons.info_outline_rounded, label: 'Information')
     ];
 
     return Scaffold(
@@ -43,10 +60,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _customAppBarUI(height, width),
-            _settingTitleUI(context),
+            AppbarWithSearchAndIcon(icon: Icons.settings),
+            if (currentUser.isNotEmpty)
+              ProfileListTile(
+                  title: '${currentUser.first['username']}',
+                  subtitle: '${currentUser.first['email']}')
+            else
+              ProfileListTile(title: 'No user data', subtitle: ''),
             SizedBox(
               height: height * 0.03,
+            ),
+            _settingTitleUI(context),
+            SizedBox(
+              height: height * 0.02,
             ),
             Container(
               padding: EdgeInsets.only(left: 20),
@@ -104,52 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _customAppBarUI(height, width) {
-    return Stack(
-      children: [
-        Container(
-          height: height * 0.1,
-          width: width * 1.0,
-          color: Color(0xffFAF0FF),
-        ),
-        SvgPicture.asset(
-          'assets/images/home_background_1st_layer.svg',
-          fit: BoxFit.fill,
-        ),
-        AppBar(
-          backgroundColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          title: Card(
-            elevation: 4,
-            child: SizedBox(
-              height: height * 0.04,
-              child: TextFormField(
-                decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search),
-                    labelText: 'Search',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none)),
-              ),
-            ),
-          ),
-          actions: [
-            Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Icon(
-                  Icons.settings,
-                  size: 35,
-                )),
-          ],
-        )
-      ],
-    );
-  }
-
   Widget _settingTitleUI(context) {
     return Padding(
       padding: EdgeInsets.only(left: 20.0),
@@ -171,8 +151,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class ProfileList {
-  const ProfileList({required this.icon, required this.label});
+class ProfileMenuList {
+  const ProfileMenuList({required this.icon, required this.label});
 
   final IconData icon;
   final String label;

@@ -1,7 +1,7 @@
 import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
+import 'package:demo_app/widgets/svg_picture_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -29,12 +29,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final userExists =
         existingUsers.any((user) => user['email'] == emailController.text);
 
+    final userNameExists =
+        existingUsers.any((user) => user['username'] == nameController.text);
+
     if (!mounted) return; // Add mounted check
 
     if (userExists) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('User with this email already exists'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (userNameExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This username is not available, please try to change'),
           backgroundColor: Colors.red,
         ),
       );
@@ -70,19 +80,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               top: height * 0.03,
               child: SizedBox(
                 height: height * 1.0,
-                child: SvgPicture.asset(
+                child: SvgPictureWidget(
                   width: width,
-                  'assets/images/signup_background_2nd_layer.svg',
-                  fit: BoxFit.fill,
+                  imagePath: 'assets/images/signup_background_2nd_layer.svg',
                 ),
               ),
             ),
             SizedBox(
               height: height * 0.27,
-              child: SvgPicture.asset(
+              child: SvgPictureWidget(
                 width: width,
-                'assets/images/signup_background_1st_layer.svg',
-                fit: BoxFit.fill,
+                imagePath: 'assets/images/signup_background_1st_layer.svg',
               ),
             ),
             screenNameSocialButtonsAndFormUI(
