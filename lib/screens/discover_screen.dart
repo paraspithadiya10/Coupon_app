@@ -1,5 +1,8 @@
+import 'package:demo_app/providers/category_provider.dart';
+import 'package:demo_app/widgets/category_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
@@ -9,14 +12,8 @@ class DiscoverScreen extends StatelessWidget {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
 
-    List categoryItems = [
-      'Grocery',
-      'Clothing',
-      'Health & Beauty',
-      'Grocery',
-      'Clothing',
-      'Health & Beauty'
-    ];
+    List<String> categoryData;
+    int listviewIndex = 0;
 
     return Scaffold(
       body: Column(
@@ -24,65 +21,66 @@ class DiscoverScreen extends StatelessWidget {
         spacing: 15,
         children: [
           _customAppBarUI(height, width, context),
-          _categoryTitleAndItemsUI(context, categoryItems, height, width),
+          Padding(
+              padding: EdgeInsets.only(left: 25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'CATEGORIES',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  SizedBox(
+                    height: height * 0.2,
+                    child: Consumer<CategoryProvider>(
+                      builder: (_, provider, __) {
+                        categoryData = provider.getCategoryData();
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: categoryData.length,
+                          itemBuilder: (context, index) {
+                            listviewIndex = index;
+                            return CategoryCard(
+                              height: height,
+                              width: width,
+                              categoryName: categoryData[index],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              )),
           _discoverTitleUI(context),
           _discoverGridViewUI(height, width),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          if (listviewIndex >= 5) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                        title: Text('information'),
+                        content: Text(
+                            'You have reached the maximum number of categories.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('OK'),
+                          ),
+                        ]));
+          } else {
+            context.read<CategoryProvider>().addCategoryData();
+          }
+        },
         child: Icon(Icons.add),
       ),
     );
-  }
-
-  Widget _categoryCardUI(height, width, categoryItems, index) {
-    return Card(
-      elevation: 4,
-      child: Container(
-        height: height * 0.19,
-        width: width * 0.3,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: Colors.white),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: height * 0.09,
-              child: Center(
-                child: Text('Image\nSection'),
-              ),
-            ),
-            Divider(),
-            Text(categoryItems[index])
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _categoryTitleAndItemsUI(context, categoryItems, height, width) {
-    return Padding(
-        padding: EdgeInsets.only(left: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'CATEGORIES',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                  spacing: 5,
-                  children: List.generate(
-                      categoryItems.length,
-                      (index) => _categoryCardUI(
-                          height, width, categoryItems, index))),
-            )
-          ],
-        ));
   }
 
   Widget _customAppBarUI(height, width, context) {
