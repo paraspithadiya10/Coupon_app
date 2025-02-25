@@ -81,13 +81,13 @@ class DbHelper {
     return rowsEffected > 0;
   }
 
-  // get user by email
+  // get user by id
   Future<List<Map<String, Object?>>> getUserByStoredId() async {
     var sharedPref = await SharedPreferences.getInstance();
-    final userId = sharedPref.getInt(keyUserId);
+    final id = sharedPref.getInt(keyUserId);
     var db = await getDB();
     var userData =
-        await db.query(userTable, where: '$userId = ?', whereArgs: [userId]);
+        await db.query(userTable, where: '$userId = ?', whereArgs: [id]);
 
     return userData;
   }

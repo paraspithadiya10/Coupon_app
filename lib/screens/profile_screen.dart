@@ -25,10 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getCurrentUser();
   }
 
-  Future<List<Map<String, Object?>>> getCurrentUser() async {
+  getCurrentUser() async {
     currentUser = await dbRef!.getUserByStoredId();
     setState(() {});
-    return currentUser;
   }
 
   void deleteAccount() async {

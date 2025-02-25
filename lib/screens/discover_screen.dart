@@ -26,8 +26,13 @@ class DiscoverScreen extends StatelessWidget {
           _customAppBarUI(height, width, context),
           _categoryTitleAndItemsUI(context, categoryItems, height, width),
           _discoverTitleUI(context),
-          _discoverGridViewUI(height, width)
+          _discoverGridViewUI(height, width),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
+        onPressed: () {},
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -214,7 +219,7 @@ class DiscoverScreen extends StatelessWidget {
 }
 
 class GridItems extends StatelessWidget {
-  GridItems(
+  const GridItems(
       {super.key,
       required this.height,
       required this.width,
@@ -268,7 +273,7 @@ class GridItems extends StatelessWidget {
                           Icon(Icons.save)
                         ],
                       ),
-                      Text('$brandName'),
+                      Text(brandName),
                     ],
                   ),
                 ),

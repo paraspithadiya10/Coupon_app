@@ -46,6 +46,20 @@ class LoginScreenState extends State<LoginScreen> {
         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
+  Future<void> handleLogin() async {
+    if (await isUserAvailable()) {
+      doLogin();
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid email or password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.sizeOf(context).height;
@@ -102,16 +116,7 @@ class LoginScreenState extends State<LoginScreen> {
           child: IconButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  if (await isUserAvailable()) {
-                    doLogin();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Invalid email or password'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                  await handleLogin();
                 }
               },
               icon: Icon(
