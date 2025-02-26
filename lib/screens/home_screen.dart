@@ -14,6 +14,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
+  final List<Widget> _screens = [
+    const DetailScreen(),
+    const DiscoverScreen(),
+    const ProfileScreen(),
+  ];
+
   void onDestinationChanged(int index) {
     setState(() {
       selectedIndex = index;
@@ -23,54 +29,53 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: [
-        DetailScreen(),
-        DiscoverScreen(),
-        ProfileScreen(),
-      ][selectedIndex],
+      body: _screens[selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton.large(
-        onPressed: () {},
-        backgroundColor: Colors.white,
-        elevation: 0,
-        shape: CircleBorder(),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 11.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                CupertinoIcons.building_2_fill,
-                size: 30,
-              ),
-              Text('Discover')
-            ],
+      floatingActionButton: _buildDiscoverButton(),
+      bottomNavigationBar: _buildNavigationBar(),
+    );
+  }
+
+  Widget _buildDiscoverButton() {
+    return FloatingActionButton.large(
+      onPressed: () => onDestinationChanged(1),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      shape: const CircleBorder(),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            CupertinoIcons.building_2_fill,
+            size: 30,
           ),
-        ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        indicatorColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        onDestinationSelected: onDestinationChanged,
-        destinations: [
-          NavigationDestination(
-              selectedIcon: Icon(Icons.notification_important_sharp, size: 35),
-              icon: Icon(
-                Icons.notifications_outlined,
-                size: 35,
-              ),
-              label: 'Notifications'),
-          NavigationDestination(icon: SizedBox(), label: ''),
-          NavigationDestination(
-              selectedIcon: Icon(Icons.person_2_sharp, size: 35),
-              icon: Icon(
-                CupertinoIcons.person,
-                size: 35,
-              ),
-              label: 'Me')
+          Text('Discover')
         ],
       ),
+    );
+  }
+
+  Widget _buildNavigationBar() {
+    final destinations = [
+      const NavigationDestination(
+        selectedIcon: Icon(Icons.notification_important_sharp, size: 35),
+        icon: Icon(Icons.notifications_outlined, size: 35),
+        label: 'Notifications',
+      ),
+      const NavigationDestination(icon: SizedBox(), label: ''),
+      const NavigationDestination(
+        selectedIcon: Icon(Icons.person_2_sharp, size: 35),
+        icon: Icon(CupertinoIcons.person, size: 35),
+        label: 'Me',
+      ),
+    ];
+
+    return NavigationBar(
+      selectedIndex: selectedIndex,
+      indicatorColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      onDestinationSelected: onDestinationChanged,
+      destinations: destinations,
     );
   }
 }

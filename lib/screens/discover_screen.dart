@@ -99,7 +99,7 @@ class DiscoverScreen extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  context.read<CategoryProvider>().addCategoryData();
+                  context.read<CategoryProvider>().addCategoryData(context);
                 },
                 icon: const Icon(Icons.add),
               ),
@@ -143,7 +143,7 @@ class DiscoverScreen extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                context.read<CouponProvider>().addCoupon();
+                context.read<CouponProvider>().addCoupon(context);
               },
               icon: Icon(Icons.add))
         ],

@@ -1,5 +1,7 @@
+import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/providers/category_provider.dart';
 import 'package:demo_app/providers/coupon_provider.dart';
+import 'package:demo_app/providers/user_provider.dart';
 import 'package:demo_app/screens/detail_screen.dart';
 import 'package:demo_app/screens/discover_screen.dart';
 import 'package:demo_app/screens/home_screen.dart';
@@ -22,7 +24,9 @@ class DemoApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => CategoryProvider()),
-        ChangeNotifierProvider(create: (context) => CouponProvider())
+        ChangeNotifierProvider(create: (context) => CouponProvider()),
+        ChangeNotifierProvider(
+            create: (context) => UserProvider(dbHelper: DbHelper.getInstance))
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

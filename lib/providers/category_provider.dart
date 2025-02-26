@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CategoryProvider extends ChangeNotifier {
   List<String> categoryItems = <String>[
@@ -14,11 +14,25 @@ class CategoryProvider extends ChangeNotifier {
 
   int categoryIndex = 0;
 
-  addCategoryData() {
-    selectedCategories.add(categoryItems[categoryIndex]);
-    categoryIndex++;
-    if (categoryIndex == categoryItems.length) {
-      categoryIndex = 0;
+  addCategoryData(context) {
+    if (categoryIndex >= categoryItems.length) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('information'),
+                content: Text('There is no more category to add'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Ok'))
+                ],
+              ));
+      categoryIndex = categoryItems.length + 1;
+    } else {
+      selectedCategories.add(categoryItems[categoryIndex]);
+      categoryIndex++;
     }
     notifyListeners();
   }

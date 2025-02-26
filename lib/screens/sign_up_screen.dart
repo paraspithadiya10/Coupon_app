@@ -1,7 +1,9 @@
-import 'package:demo_app/data/local/db_helper.dart';
+import 'package:demo_app/providers/user_provider.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:demo_app/widgets/svg_picture_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:demo_app/widgets/custom_text_form_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -11,8 +13,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  DbHelper? dbRef;
-
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -21,18 +21,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    dbRef = DbHelper.getInstance;
   }
 
   void proceedSignUp() async {
-    final existingUsers = await dbRef!.getAllUsers();
+    final existingUsers = context.read<UserProvider>().getAllUsers();
     final userExists =
         existingUsers.any((user) => user['email'] == emailController.text);
 
     final userNameExists =
         existingUsers.any((user) => user['username'] == nameController.text);
 
-    if (!mounted) return; // Add mounted check
+    if (!mounted) return;
 
     if (userExists) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,12 +48,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       );
     } else {
-      await dbRef!.addUser(
-          username: nameController.text,
-          email: emailController.text,
-          password: passwordController.text);
+      await context.read<UserProvider>().addUser(
+          nameController.text, emailController.text, passwordController.text);
 
-      if (!mounted) return; // Add another check after the second async gap
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Account created successfully!'),
         backgroundColor: const Color.fromARGB(255, 51, 177, 55),
@@ -71,7 +68,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SizedBox(
         height: height * 1.0,
         child: Stack(
@@ -93,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 imagePath: 'assets/images/signup_background_1st_layer.svg',
               ),
             ),
-            screenNameSocialButtonsAndFormUI(
+            _buildMainContent(
                 width,
                 height,
                 context,
@@ -108,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget screenNameSocialButtonsAndFormUI(
+  Widget _buildMainContent(
       double width,
       double height,
       BuildContext context,
@@ -135,11 +131,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fontSize: 45),
               ),
             ),
-            socialButtonsUI(width),
+            _socialButtonsUI(width),
             Container(
                 padding:
                     EdgeInsets.only(left: 35, top: height * 0.04, right: 35),
-                child: formTextFieldsUI(
+                child: _buildSignUpFormUI(
                     context,
                     nameController,
                     emailController,
@@ -153,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget socialButtonsUI(double width) {
+  Widget _socialButtonsUI(double width) {
     return Padding(
       padding: EdgeInsets.only(left: width * 0.09),
       child: Row(
@@ -173,15 +169,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget formTextFieldsUI(context, nameController, emailController,
+  Widget _buildSignUpFormUI(context, nameController, emailController,
       passwordController, confirmPasswordController, height, formKey) {
+    final TextStyle labelColor =
+        Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white);
     return Form(
       key: formKey,
       child: Column(
         spacing: 30,
         children: [
-          TextFormField(
+          CustomTextFormField(
             controller: nameController,
+            labelText: 'Name',
+            labelColor: labelColor,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Name is required';
@@ -191,15 +191,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
-            decoration: InputDecoration(
-                labelText: 'Name',
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.white)),
           ),
-          TextFormField(
+          CustomTextFormField(
             controller: emailController,
+            labelText: 'Email',
+            labelColor: labelColor,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Email is required';
@@ -210,15 +206,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
-            decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.white)),
           ),
-          TextFormField(
+          CustomTextFormField(
             controller: passwordController,
+            labelText: 'Password',
+            labelColor: labelColor,
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -229,16 +221,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
-            decoration: InputDecoration(
-              labelText: 'Password',
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Colors.white),
-            ),
           ),
-          TextFormField(
+          CustomTextFormField(
             controller: confirmPasswordController,
+            labelText: 'Confirm Password',
+            labelColor: labelColor,
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -252,17 +239,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
-            decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.white)),
           ),
-          textAndButtonUI(context, nameController, emailController,
-              passwordController, formKey),
+          _signUpHeaderWithActionButton(context, nameController,
+              emailController, passwordController, formKey),
           SizedBox(height: 20),
-          signInButtonUI(context),
+          _signInLinkUI(context),
           SizedBox(
             height: height * 0.1,
           )
@@ -271,8 +252,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget textAndButtonUI(BuildContext context, nameController, emailController,
-      passwordController, formKey) {
+  Widget _signUpHeaderWithActionButton(BuildContext context, nameController,
+      emailController, passwordController, formKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -300,7 +281,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget signInButtonUI(BuildContext context) {
+  Widget _signInLinkUI(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
