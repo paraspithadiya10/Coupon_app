@@ -43,6 +43,7 @@ class CouponWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   child: Column(
+                    spacing: 2,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -52,7 +53,10 @@ class CouponWidget extends StatelessWidget {
                             '$discount% off',
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          Icon(Icons.save)
+                          Icon(
+                            Icons.save,
+                            size: 20,
+                          )
                         ],
                       ),
                       Text(brandName),
@@ -61,7 +65,7 @@ class CouponWidget extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: const EdgeInsets.only(left: 8.0, top: 3.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

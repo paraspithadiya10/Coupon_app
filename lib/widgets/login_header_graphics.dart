@@ -1,8 +1,8 @@
 import 'package:demo_app/widgets/svg_picture_widget.dart';
 import 'package:flutter/material.dart';
 
-class LoginHeaderGraphics extends StatelessWidget {
-  const LoginHeaderGraphics({super.key});
+class LoginHeaderGraphicsWidget extends StatelessWidget {
+  const LoginHeaderGraphicsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,12 @@
-import 'package:demo_app/data/local/db_helper.dart';
 import 'package:demo_app/data/preferences/pref_keys.dart';
+import 'package:demo_app/providers/user_provider.dart';
 import 'package:demo_app/screens/home_screen.dart';
 import 'package:demo_app/widgets/login_header_graphics.dart';
 import 'package:demo_app/widgets/social_buttons_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:demo_app/widgets/custom_text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,29 +19,28 @@ class LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  DbHelper? dbRef;
   final _formKey = GlobalKey<FormState>();
 
-  List<Map<String, dynamic>> user = [];
+  List<Map<String, dynamic>> currentUser = [];
 
   @override
   void initState() {
     super.initState();
-    dbRef = DbHelper.getInstance;
   }
 
   Future<bool> isUserAvailable() async {
-    user = await dbRef!.getUser(
-        emailController.text.toString(), passwordController.text.toString());
+    currentUser = await context
+        .read<UserProvider>()
+        .getUser(emailController.text, passwordController.text);
 
-    return user.isNotEmpty;
+    return currentUser.isNotEmpty;
   }
 
   void doLogin() async {
     // User found, proceed with login
     var sharedPref = await SharedPreferences.getInstance();
     await sharedPref.setBool(keyLogin, true);
-    await sharedPref.setInt(keyUserId, user.first['id']);
+    await sharedPref.setInt(keyUserId, currentUser.first['id']);
 
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -65,23 +66,19 @@ class LoginScreenState extends State<LoginScreen> {
     double height = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            LoginHeaderGraphics(),
-            socialAuthOptionsUI(),
-            Container(
-                padding:
-                    EdgeInsets.only(left: 35, top: height * 0.08, right: 35),
-                child: loginFormUI()),
+            LoginHeaderGraphicsWidget(),
+            _socialAuthOptionsUI(),
+            loginFormUI(height, context)
           ],
         ),
       ),
     );
   }
 
-  Widget socialAuthOptionsUI() {
+  Widget _socialAuthOptionsUI() {
     return Padding(
       padding: const EdgeInsets.only(left: 35, top: 25),
       child: Row(
@@ -100,7 +97,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget textAndArrowButtonUI() {
+  Widget _textAndArrowButtonUI() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -128,7 +125,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget signUpAndForgotPasswordButtonsUI() {
+  Widget _signUpAndForgotPasswordButtonsUI() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -155,55 +152,52 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget loginFormUI() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        spacing: 30,
-        children: [
-          TextFormField(
-            controller: emailController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Email is required';
-              }
-              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                  .hasMatch(value)) {
-                return 'Invalid email address';
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.grey)),
-          ),
-          TextFormField(
-            controller: passwordController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Password is required';
-              }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters long';
-              }
-              return null;
-            },
-            obscureText: true,
-            decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.grey)),
-          ),
-          SizedBox(height: 20),
-          textAndArrowButtonUI(),
-          SizedBox(height: 20),
-          signUpAndForgotPasswordButtonsUI()
-        ],
+  Widget loginFormUI(height, context) {
+    final labelColor =
+        Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.grey);
+    return Container(
+      padding: EdgeInsets.only(left: 35, top: height * 0.08, right: 35),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          spacing: 30,
+          children: [
+            CustomTextFormField(
+              controller: emailController,
+              labelText: 'Email',
+              labelColor: labelColor,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Email is required';
+                }
+                if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                    .hasMatch(value)) {
+                  return 'Invalid email address';
+                }
+                return null;
+              },
+            ),
+            CustomTextFormField(
+              controller: passwordController,
+              labelText: 'Password',
+              labelColor: labelColor,
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Password is required';
+                }
+                if (value.length < 8) {
+                  return 'Password must be at least 8 characters long';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 20),
+            _textAndArrowButtonUI(),
+            SizedBox(height: 20),
+            _signUpAndForgotPasswordButtonsUI()
+          ],
+        ),
       ),
     );
   }

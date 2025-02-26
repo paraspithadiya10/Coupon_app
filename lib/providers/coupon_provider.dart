@@ -44,12 +44,25 @@ class CouponProvider extends ChangeNotifier {
 
   int couponIndex = 0;
 
-  void addCoupon() {
-    selectedCoupon.add(couponItems[couponIndex]);
-    couponIndex++;
-
-    if (couponIndex == couponItems.length) {
-      couponIndex = 0;
+  void addCoupon(context) {
+    if (couponIndex >= couponItems.length) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('information'),
+                content: Text('There is no more coupon to add'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Ok'))
+                ],
+              ));
+      couponIndex = couponItems.length + 1;
+    } else {
+      selectedCoupon.add(couponItems[couponIndex]);
+      couponIndex++;
     }
 
     notifyListeners();

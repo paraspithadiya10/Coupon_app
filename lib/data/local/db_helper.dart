@@ -1,9 +1,7 @@
 import 'dart:io';
-import 'package:demo_app/data/preferences/pref_keys.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DbHelper {
   /// Singleton
@@ -72,19 +70,8 @@ class DbHelper {
     return userData;
   }
 
-  // delete user from users table
-  Future<bool> deleteUser(String email) async {
-    var db = await getDB();
-    int rowsEffected =
-        await db.delete(userTable, where: '$userEmail = ?', whereArgs: [email]);
-
-    return rowsEffected > 0;
-  }
-
   // get user by id
-  Future<List<Map<String, Object?>>> getUserByStoredId() async {
-    var sharedPref = await SharedPreferences.getInstance();
-    final id = sharedPref.getInt(keyUserId);
+  Future<List<Map<String, Object?>>> getUserByStoredId(String id) async {
     var db = await getDB();
     var userData =
         await db.query(userTable, where: '$userId = ?', whereArgs: [id]);
@@ -99,5 +86,14 @@ class DbHelper {
         where: '$userEmail = ? ', whereArgs: [email]);
 
     return '$rowsEffected rows Effected';
+  }
+
+  // delete user from users table
+  Future<bool> deleteUser(String email) async {
+    var db = await getDB();
+    int rowsEffected =
+        await db.delete(userTable, where: '$userEmail = ?', whereArgs: [email]);
+
+    return rowsEffected > 0;
   }
 }
