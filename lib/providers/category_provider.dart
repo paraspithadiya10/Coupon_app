@@ -1,9 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 
 class CategoryProvider extends ChangeNotifier {
-  List categoryItems = [
+  List<String> categoryItems = <String>[
     'Grocery',
     'Clothing',
     'Health & Beauty',
@@ -12,12 +10,12 @@ class CategoryProvider extends ChangeNotifier {
     'Electronics',
   ];
 
-  List<String> categoryData = [];
+  List<String> selectedCategories = [];
 
   int categoryIndex = 0;
 
   addCategoryData() {
-    categoryData.add(categoryItems[categoryIndex]);
+    selectedCategories.add(categoryItems[categoryIndex]);
     categoryIndex++;
     if (categoryIndex == categoryItems.length) {
       categoryIndex = 0;
@@ -25,5 +23,5 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> getCategoryData() => categoryData;
+  List<String> getSelectedCategoryData() => selectedCategories;
 }

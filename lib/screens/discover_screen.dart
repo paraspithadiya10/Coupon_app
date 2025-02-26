@@ -1,5 +1,7 @@
 import 'package:demo_app/providers/category_provider.dart';
+import 'package:demo_app/providers/coupon_provider.dart';
 import 'package:demo_app/widgets/category_card_widget.dart';
+import 'package:demo_app/widgets/coupon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -12,78 +14,21 @@ class DiscoverScreen extends StatelessWidget {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
 
-    List<String> categoryData;
-    int listviewIndex = 0;
-
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 15,
         children: [
-          _customAppBarUI(height, width, context),
-          Padding(
-              padding: EdgeInsets.only(left: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'CATEGORIES',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  SizedBox(
-                    height: height * 0.2,
-                    child: Consumer<CategoryProvider>(
-                      builder: (_, provider, __) {
-                        categoryData = provider.getCategoryData();
-                        return ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: categoryData.length,
-                          itemBuilder: (context, index) {
-                            listviewIndex = index;
-                            return CategoryCard(
-                              height: height,
-                              width: width,
-                              categoryName: categoryData[index],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              )),
-          _discoverTitleUI(context),
-          _discoverGridViewUI(height, width),
+          _searchAppBarUI(height, width, context),
+          _categoriesSectionUI(height, width, context),
+          _discoverHeaderUI(context),
+          _couponGridViewUI(height, width, context),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        onPressed: () {
-          if (listviewIndex >= 5) {
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                        title: Text('information'),
-                        content: Text(
-                            'You have reached the maximum number of categories.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('OK'),
-                          ),
-                        ]));
-          } else {
-            context.read<CategoryProvider>().addCategoryData();
-          }
-        },
-        child: Icon(Icons.add),
       ),
     );
   }
 
-  Widget _customAppBarUI(height, width, context) {
+  Widget _searchAppBarUI(height, width, context) {
     return Stack(
       children: [
         Container(
@@ -138,162 +83,102 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _discoverTitleUI(context) {
+  Widget _categoriesSectionUI(
+      double height, double width, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30),
-      child: Text(
-        'DISCOVER',
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(color: Colors.grey),
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'CATEGORIES',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              IconButton(
+                onPressed: () {
+                  context.read<CategoryProvider>().addCategoryData();
+                },
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: height * 0.2,
+            child: Consumer<CategoryProvider>(
+              builder: (_, provider, __) {
+                final List<String> selectedCategoryData =
+                    provider.getSelectedCategoryData();
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedCategoryData.length,
+                  itemBuilder: (context, index) => CategoryCard(
+                    height: height,
+                    width: width,
+                    categoryName: selectedCategoryData[index],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _discoverGridViewUI(height, width) {
+  Widget _discoverHeaderUI(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'DISCOVER',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.grey),
+          ),
+          IconButton(
+              onPressed: () {
+                context.read<CouponProvider>().addCoupon();
+              },
+              icon: Icon(Icons.add))
+        ],
+      ),
+    );
+  }
+
+  Widget _couponGridViewUI(height, width, context) {
     return Expanded(
       child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 25,
           ),
-          child: GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 5,
-            childAspectRatio: 0.7,
-            children: [
-              GridItems(
+          child: Consumer<CouponProvider>(builder: (_, provider, __) {
+            List<Map<String, dynamic>> couponItems = provider.getCoupon();
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 5,
+                childAspectRatio: 0.7,
+              ),
+              itemCount: couponItems.length,
+              itemBuilder: (context, index) {
+                return CouponWidget(
                   height: height,
                   width: width,
-                  discount: 10,
-                  brandName: 'Castel Winery',
-                  date: 'jun 1 - jun 8',
-                  isBelongsTo: true),
-              GridItems(
-                  height: height,
-                  width: width,
-                  discount: 15,
-                  brandName: 'Pancakes House',
-                  date: 'jun 1 - jun 24',
-                  isBelongsTo: false),
-              GridItems(
-                height: height,
-                width: width,
-                discount: 10,
-                brandName: 'Spa Boutique',
-                date: 'jun 1 - jun 8',
-                isBelongsTo: true,
-              ),
-              GridItems(
-                height: height,
-                width: width,
-                discount: 15,
-                brandName: 'H & M',
-                date: 'jun 1 - jun 8',
-                isBelongsTo: false,
-              ),
-              GridItems(
-                height: height,
-                width: width,
-                discount: 5,
-                brandName: 'Apple online store',
-                date: 'jun 1 - jun 18',
-                isBelongsTo: true,
-              ),
-              GridItems(
-                height: height,
-                width: width,
-                discount: 5,
-                brandName: 'Mashya Restaurant',
-                date: 'jun 1 - jun 8',
-                isBelongsTo: false,
-              ),
-            ],
-          )),
-    );
-  }
-}
-
-class GridItems extends StatelessWidget {
-  const GridItems(
-      {super.key,
-      required this.height,
-      required this.width,
-      required this.discount,
-      required this.brandName,
-      required this.date,
-      required this.isBelongsTo});
-
-  final double height;
-  final double width;
-  final double discount;
-  final String brandName;
-  final String date;
-  final bool isBelongsTo;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/detail_Screen');
-      },
-      child: Card(
-        elevation: 4,
-        child: Container(
-          height: height * 0.3,
-          width: width * 0.2,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15), color: Colors.white),
-          child: Column(
-            children: [
-              SizedBox(
-                height: height * 0.14,
-                child: Center(
-                  child: Text('[Image Section]'),
-                ),
-              ),
-              Divider(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '$discount% off',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          Icon(Icons.save)
-                        ],
-                      ),
-                      Text(brandName),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(date),
-                    Container(
-                      width: width * 0.06,
-                      height: height * 0.004,
-                      color: isBelongsTo ? Colors.green : Colors.red,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+                  discount: couponItems[index]['discount'].toDouble(),
+                  brandName: couponItems[index]['brandName'],
+                  date: couponItems[index]['date'],
+                  isBelongsTo: couponItems[index]['isBelongsTo'],
+                );
+              },
+            );
+          })),
     );
   }
 }

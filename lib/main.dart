@@ -1,4 +1,5 @@
 import 'package:demo_app/providers/category_provider.dart';
+import 'package:demo_app/providers/coupon_provider.dart';
 import 'package:demo_app/screens/detail_screen.dart';
 import 'package:demo_app/screens/discover_screen.dart';
 import 'package:demo_app/screens/home_screen.dart';
@@ -18,8 +19,11 @@ class DemoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CategoryProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CategoryProvider()),
+        ChangeNotifierProvider(create: (context) => CouponProvider())
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: SplashScreen(),
