@@ -28,29 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool showFab = MediaQuery.of(context).viewInsets.bottom != 0;
+
     return Scaffold(
       body: _screens[selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _buildDiscoverButton(),
+      floatingActionButton: _buildDiscoverButton(context, showFab),
       bottomNavigationBar: _buildNavigationBar(),
     );
   }
 
-  Widget _buildDiscoverButton() {
-    return FloatingActionButton.large(
-      onPressed: () => onDestinationChanged(1),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      shape: const CircleBorder(),
-      child: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            CupertinoIcons.building_2_fill,
-            size: 30,
-          ),
-          Text('Discover')
-        ],
+  Widget _buildDiscoverButton(context, showFab) {
+    return Visibility(
+      visible: !showFab,
+      child: FloatingActionButton.large(
+        onPressed: () => onDestinationChanged(1),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        shape: const CircleBorder(),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              CupertinoIcons.building_2_fill,
+              size: 30,
+            ),
+            Text('Discover')
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:demo_app/providers/category_provider.dart';
 import 'package:demo_app/providers/coupon_provider.dart';
+import 'package:demo_app/widgets/category_bottom_sheet_widget.dart';
 import 'package:demo_app/widgets/category_card_widget.dart';
+import 'package:demo_app/widgets/coupon_bottom_sheet_widget.dart';
 import 'package:demo_app/widgets/coupon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,14 +16,20 @@ class DiscoverScreen extends StatelessWidget {
     double height = MediaQuery.sizeOf(context).height;
     double width = MediaQuery.sizeOf(context).width;
 
+    TextEditingController categoryNameController = TextEditingController();
+
+    TextEditingController brandNameController = TextEditingController();
+    TextEditingController discountController = TextEditingController();
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 15,
         children: [
           _searchAppBarUI(height, width, context),
-          _categoriesSectionUI(height, width, context),
-          _discoverHeaderUI(context),
+          _categoriesSectionUI(height, width, context, categoryNameController),
+          _discoverHeaderUI(
+              context, height, width, brandNameController, discountController),
           _couponGridViewUI(height, width, context),
         ],
       ),
@@ -83,8 +91,8 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _categoriesSectionUI(
-      double height, double width, BuildContext context) {
+  Widget _categoriesSectionUI(double height, double width, BuildContext context,
+      categoryNameController) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
@@ -98,28 +106,32 @@ class DiscoverScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               IconButton(
-                onPressed: () {
-                  context.read<CategoryProvider>().addCategoryData(context);
-                },
-                icon: const Icon(Icons.add),
-              ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) => CategoryBottomSheetWidget(
+                              isCategoryUpdate: false,
+                            ));
+                  },
+                  icon: Icon(Icons.add))
             ],
           ),
           SizedBox(
             height: height * 0.2,
             child: Consumer<CategoryProvider>(
               builder: (_, provider, __) {
-                final List<String> selectedCategoryData =
-                    provider.getSelectedCategoryData();
+                final List<String> categoryList = provider.getCategoryList();
                 return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: selectedCategoryData.length,
-                  itemBuilder: (context, index) => CategoryCard(
-                    height: height,
-                    width: width,
-                    categoryName: selectedCategoryData[index],
-                  ),
-                );
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categoryList.length,
+                    itemBuilder: (context, index) {
+                      return CategoryCard(
+                        height: height,
+                        width: width,
+                        categoryIndex: index,
+                        categoryName: categoryList[index],
+                      );
+                    });
               },
             ),
           ),
@@ -128,7 +140,8 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _discoverHeaderUI(BuildContext context) {
+  Widget _discoverHeaderUI(BuildContext context, height, width,
+      brandNameController, discountController) {
     return Padding(
       padding: const EdgeInsets.only(left: 30, right: 25),
       child: Row(
@@ -143,7 +156,11 @@ class DiscoverScreen extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                context.read<CouponProvider>().addCoupon(context);
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) => CouponBottomSheetWidget(
+                          isCouponUpdate: false,
+                        ));
               },
               icon: Icon(Icons.add))
         ],
@@ -158,7 +175,7 @@ class DiscoverScreen extends StatelessWidget {
             horizontal: 25,
           ),
           child: Consumer<CouponProvider>(builder: (_, provider, __) {
-            List<Map<String, dynamic>> couponItems = provider.getCoupon();
+            List<Map<String, dynamic>> couponItems = provider.getCouponList();
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -171,7 +188,8 @@ class DiscoverScreen extends StatelessWidget {
                 return CouponWidget(
                   height: height,
                   width: width,
-                  discount: couponItems[index]['discount'].toDouble(),
+                  couponIndex: index,
+                  discount: couponItems[index]['discount'],
                   brandName: couponItems[index]['brandName'],
                   date: couponItems[index]['date'],
                   isBelongsTo: couponItems[index]['isBelongsTo'],
