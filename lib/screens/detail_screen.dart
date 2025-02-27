@@ -36,9 +36,14 @@ class DetailScreen extends StatelessWidget {
       padding: const EdgeInsets.only(left: 20.0, top: 50.0),
       child: Row(
         children: [
-          Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.white,
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+            ),
           ),
           Text(
             'ADIDAS',

@@ -5,6 +5,7 @@ class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final TextStyle labelColor;
   final bool obscureText;
+  final bool autofocus;
   final String? Function(String?)? validator;
 
   const CustomTextFormField({
@@ -13,6 +14,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.labelText,
     required this.labelColor,
     this.obscureText = false,
+    this.autofocus = false,
     this.validator,
   });
 
