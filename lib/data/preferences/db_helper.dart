@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CountryDbHelper {
-  /// Singleton
+  /// Singleton using a private constructor.
   CountryDbHelper._();
   static final CountryDbHelper getInstance = CountryDbHelper._();
 
@@ -18,13 +18,13 @@ class CountryDbHelper {
   static final String colFlagUrl = 'flagUrl';
   static final String colCurrency = 'currency';
 
-  /// Returns the database instance; if null, opens/creates the database.
+  /// Returns the database instance; if not available, opens/creates it.
   Future<Database> getDB() async {
     myDB ??= await openDB();
     return myDB!;
   }
 
-  /// Opens the database (if it doesn't exist, creates it).
+  /// Opens the database, creating it if it doesn’t exist.
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
     String path = join(appDir.path, 'countries.db');
@@ -40,7 +40,7 @@ class CountryDbHelper {
     );
   }
 
-  /// Inserts multiple countries using a batch operation.
+  /// Inserts a list of country maps into the database using a batch operation.
   Future<void> insertCountries(List<Map<String, dynamic>> countries) async {
     var db = await getDB();
     var batch = db.batch();
@@ -54,7 +54,7 @@ class CountryDbHelper {
     await batch.commit(noResult: true);
   }
 
-  /// Fetches all countries from the database.
+  /// Retrieves all country rows from the database.
   Future<List<Map<String, dynamic>>> getAllCountries() async {
     var db = await getDB();
     return await db.query(tableName);
@@ -71,7 +71,3 @@ class CountryDbHelper {
     return rowsAffected > 0;
   }
 }
-
-
-
-

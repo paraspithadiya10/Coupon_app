@@ -1,56 +1,84 @@
 // country.dart
+import 'dart:convert';
+
+List<CountryModel> countryModelFromJson(String str) =>
+    List<CountryModel>.from(json.decode(str).map((x) => CountryModel.fromJson(x)));
+
+String countryModelToJson(List<CountryModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
 class CountryModel {
   Flags? flags;
   Name? name;
   String? cca2;
-  Currencies? currencies;
+  Map<String, Currency>? currencies;
 
-  CountryModel({this.flags, this.name, this.cca2, this.currencies});
+  CountryModel({
+    this.flags,
+    this.name,
+    this.cca2,
+    this.currencies,
+  });
 
-  CountryModel.fromJson(Map<String, dynamic> json) {
-    flags = json['flags'] != null ? Flags.fromJson(json['flags']) : null;
-    name = json['name'] != null ? Name.fromJson(json['name']) : null;
-    cca2 = json['cca2'];
-    currencies = json['currencies'] != null
-        ? Currencies.fromJson(json['currencies'])
-        : null;
-  }
+  factory CountryModel.fromJson(Map<String, dynamic> json) => CountryModel(
+        flags: Flags.fromJson(json["flags"]),
+        name: Name.fromJson(json["name"]),
+        cca2: json["cca2"],
+        currencies: Map.from(json["currencies"])
+            .map((k, v) => MapEntry<String, Currency>(k, Currency.fromJson(v))),
+      );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    if (flags != null) {
-      data['flags'] = flags!.toJson();
-    }
-    if (name != null) {
-      data['name'] = name!.toJson();
-    }
-    data['cca2'] = cca2;
-    if (currencies != null) {
-      data['currencies'] = currencies!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "flags": flags?.toJson(),
+        "name": name?.toJson(),
+        "cca2": cca2,
+        "currencies": Map.from(currencies!)
+            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
+      };
 
-  /// Converts the model into a map for database storage.
-  /// Only the fields needed for display are stored.
+  /// Converts the model into a map for storing in the local database.
+  /// Here we store the currency symbol instead of the currency name.
   Map<String, dynamic> toDbMap() {
     return {
-      'code': cca2 ?? '',
-      'name': name?.common ?? '',
-      'flagUrl': flags?.png ?? '',
-      'currency': currencies?.sHP?.name ?? '',
+      'code': cca2,
+      'name': name?.common,
+      'flagUrl': flags?.png,
+      'currency': currencies?.values.first.symbol, // store symbol
     };
   }
 
   /// Creates a CountryModel from a database map.
+  /// We create partial objects because we only stored a few fields.
   factory CountryModel.fromDbMap(Map<String, dynamic> map) {
     return CountryModel(
-      flags: Flags(png: map['flagUrl']),
-      name: Name(common: map['name']),
+      flags: Flags(png: map['flagUrl'], svg: '', alt: ''),
+      name: Name(common: map['name'], official: '', nativeName: {}),
       cca2: map['code'],
-      currencies: Currencies(sHP: SHP(name: map['currency'])),
+      currencies: {
+        '': Currency(name: '', symbol: map['currency'])
+      },
     );
   }
+}
+
+class Currency {
+  String? name;
+  String? symbol;
+
+  Currency({
+    this.name,
+    this.symbol,
+  });
+
+  factory Currency.fromJson(Map<String, dynamic> json) => Currency(
+        name: json["name"],
+        symbol: json["symbol"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "symbol": symbol,
+      };
 }
 
 class Flags {
@@ -58,119 +86,67 @@ class Flags {
   String? svg;
   String? alt;
 
-  Flags({this.png, this.svg, this.alt});
+  Flags({
+    this.png,
+    this.svg,
+    this.alt,
+  });
 
-  Flags.fromJson(Map<String, dynamic> json) {
-    png = json['png'];
-    svg = json['svg'];
-    alt = json['alt'];
-  }
+  factory Flags.fromJson(Map<String, dynamic> json) => Flags(
+        png: json["png"],
+        svg: json["svg"],
+        alt: json["alt"],
+      );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['png'] = png;
-    data['svg'] = svg;
-    data['alt'] = alt;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "png": png,
+        "svg": svg,
+        "alt": alt,
+      };
 }
 
 class Name {
   String? common;
   String? official;
-  NativeName? nativeName;
+  Map<String, NativeName>? nativeName;
 
-  Name({this.common, this.official, this.nativeName});
+  Name({
+    this.common,
+    this.official,
+    this.nativeName,
+  });
 
-  Name.fromJson(Map<String, dynamic> json) {
-    common = json['common'];
-    official = json['official'];
-    nativeName = json['nativeName'] != null
-        ? NativeName.fromJson(json['nativeName'])
-        : null;
-  }
+  factory Name.fromJson(Map<String, dynamic> json) => Name(
+        common: json["common"],
+        official: json["official"],
+        nativeName: Map.from(json["nativeName"])
+            .map((k, v) => MapEntry<String, NativeName>(k, NativeName.fromJson(v))),
+      );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['common'] = common;
-    data['official'] = official;
-    if (nativeName != null) {
-      data['nativeName'] = nativeName!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "common": common,
+        "official": official,
+        "nativeName": Map.from(nativeName!)
+            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
+      };
 }
 
 class NativeName {
-  Eng? eng;
-
-  NativeName({this.eng});
-
-  NativeName.fromJson(Map<String, dynamic> json) {
-    eng = json['eng'] != null ? Eng.fromJson(json['eng']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    if (eng != null) {
-      data['eng'] = eng!.toJson();
-    }
-    return data;
-  }
-}
-
-class Eng {
   String? official;
   String? common;
 
-  Eng({this.official, this.common});
+  NativeName({
+    this.official,
+    this.common,
+  });
 
-  Eng.fromJson(Map<String, dynamic> json) {
-    official = json['official'];
-    common = json['common'];
-  }
+  factory NativeName.fromJson(Map<String, dynamic> json) => NativeName(
+        official: json["official"],
+        common: json["common"],
+      );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['official'] = official;
-    data['common'] = common;
-    return data;
-  }
-}
-
-class Currencies {
-  SHP? sHP;
-
-  Currencies({this.sHP});
-
-  Currencies.fromJson(Map<String, dynamic> json) {
-    sHP = json['SHP'] != null ? SHP.fromJson(json['SHP']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    if (sHP != null) {
-      data['SHP'] = sHP!.toJson();
-    }
-    return data;
-  }
-}
-
-class SHP {
-  String? name;
-  String? symbol;
-
-  SHP({this.name, this.symbol});
-
-  SHP.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    symbol = json['symbol'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['name'] = name;
-    data['symbol'] = symbol;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "official": official,
+        "common": common,
+      };
 }

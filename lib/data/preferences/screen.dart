@@ -166,8 +166,8 @@ class _CountryListPageState extends State<CountryListPage> {
                     ),
                   ),
                   title: Text(country.name?.common ?? ''),
-                  subtitle: Text(
-                      'Code: ${country.cca2 ?? ''}\nCurrency: ${country.currencies?.sHP?.name ?? ''}'),
+                  /*subtitle: Text(
+                      'Code: ${country.cca2 ?? ''}\nCurrency: ${country.currencies?.sHP?.name ?? ''}'),*/
                   onLongPress: () {
                     _deleteCountry(country);
                   },
